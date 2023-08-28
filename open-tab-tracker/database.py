@@ -1,0 +1,48 @@
+from datetime import datetime, timezone
+from loguru import logger
+from typing import List, Tuple
+from xdg_base_dirs import xdg_data_home
+import sqlite3 as sql
+
+
+class Database:
+    def __init__(self):
+        self.database_name = xdg_data_home() / "open-tab-tracker.db"
+        self.create_db_and_datatable_if_not_exists()
+
+    def create_db_and_datatable_if_not_exists(self):
+        conn = sql.connect(self.database_name)
+        logger.info(f"Database created at {self.database_name}")
+        cursor = conn.cursor()
+        cursor.execute(
+            "CREATE TABLE IF NOT EXISTS tab_count (datetime TEXT, firefox_tab_count INTEGER)"
+        )
+        conn.commit()
+
+    def write_to_database(self, firefox_tab_count: int):
+        tz_aware_datetime = datetime.now(timezone.utc)
+        conn = sql.connect(self.database_name)
+        cur = conn.cursor()
+        cur.execute(
+            "INSERT INTO tab_count ('datetime', 'firefox_tab_count') VALUES (?, ?)",
+            (tz_aware_datetime, firefox_tab_count),
+        )
+        conn.commit()
+        conn.close()
+
+    def dump_database(self):
+        conn = sql.connect(self.database_name)
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM tab_count")
+        rows = cur.fetchall()
+        for row in rows:
+            logger.info(row)
+        conn.close()
+
+    def get_database_values(self) -> List[Tuple[datetime, int]]:
+        conn = sql.connect(self.database_name)
+        cur = conn.cursor()
+        cur.execute("SELECT * FROM tab_count")
+        rows = cur.fetchall()
+        conn.close()
+        return rows

@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "open-tab-tracker"
+version = "0.1.0"
+description = ""
+authors = ["Aaron Lichtman <aaronlichtman@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+matplotlib = "^3.7.2"
+pandas = "^2.0.3"
+xdg-base-dirs = "^6.0.0"
+loguru = "^0.7.0"
+
+[tool.poetry.group.dev.dependencies]
+better-exceptions = "^0.3.3"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
