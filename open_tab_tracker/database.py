@@ -46,8 +46,8 @@ class Database:
         os.remove(self.database_file)
 
     def print_dataframe(df: pd.DataFrame):
-            with pd.option_context('display.max_rows', None, 'display.max_columns', None):
-                print(df)
+        with pd.option_context("display.max_rows", None, "display.max_columns", None):
+            print(df)
 
     # Returns a dataframe with the columns: datetime, firefox_tab_count
     def get_database_values_as_dataframe(self) -> pd.DataFrame:
@@ -57,5 +57,5 @@ class Database:
         rows = cur.fetchall()
         conn.close()
         df = pd.DataFrame(rows, columns=["datetime", "firefox_tab_count"])
-        df['firefox_tab_count'].astype(int)
+        df["firefox_tab_count"].astype(int)
         return df
