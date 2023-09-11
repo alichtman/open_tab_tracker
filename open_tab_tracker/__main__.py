@@ -1,8 +1,10 @@
 from .database import Database
 from .firefox import Firefox
 from .graphing import draw_graph
+from .install import install_service_for_current_platform
 import click
 from loguru import logger
+import sys
 
 
 def get_current_tab_count_and_write_to_database(database: Database):
@@ -12,6 +14,7 @@ def get_current_tab_count_and_write_to_database(database: Database):
 
 
 @click.command()
+@click.option("--add_datapoint", "-a", is_flag=True, help="Add a datapoint")
 @click.option("--daemon", is_flag=True, help="Run as a daemon")
 @click.option(
     "--install",
@@ -20,22 +23,23 @@ def get_current_tab_count_and_write_to_database(database: Database):
 )
 @click.option("--graph", is_flag=True, help="Graph the data")
 @click.option("--drop-database", is_flag=True, help="Drop the database")
-def main(daemon, graph, install, drop_database):
+@click.option("--print_db", is_flag=True, help="Print the database")
+def main(add_datapoint, daemon, graph, print_db, install, drop_database):
     database = Database()
     if drop_database:
-        logger.log("Dropping database")
+        logger.warning("Dropping database")
         database.drop_database()
         return
-    elif daemon:
-        logger.log("Running as daemon")
-        register_daemon()
-        # Start background job to log tab counts every 5 minutes
-        pass
+    elif print_db:
+        database.print_database()
+        sys.exit(0)
     elif install:
-        logger.log("Installing daemon")
-        pass
+        logger.info("Installing daemon")
+        install_service_for_current_platform()
+        sys.exit(0)
 
-    get_current_tab_count_and_write_to_database(database)
+    if add_datapoint:
+        get_current_tab_count_and_write_to_database(database)
 
     if graph:
         draw_graph(database.get_database_values_as_dataframe())

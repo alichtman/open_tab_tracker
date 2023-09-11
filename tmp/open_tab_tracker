@@ -1,0 +1,15 @@
+2023-09-11T06:23:41.761209-0700 INFO Database created at /Users/alichtman/.local/share/open_tab_tracker.db
+2023-09-11T06:23:41.761839-0700 INFO Installing daemon
+2023-09-11T06:23:41.762031-0700 INFO Installing launchd service from /Users/alichtman/Desktop/Development/projects/open_tab_tracker/open_tab_tracker/system_jobs/com.alichtman.open_tab_tracker.plist to /Library/LaunchAgents
+2023-09-11T06:26:16.501791-0700 INFO Database created at /Users/alichtman/.local/share/open_tab_tracker.db
+2023-09-11T06:26:16.502424-0700 INFO Installing daemon
+2023-09-11T06:26:16.502815-0700 INFO Installing launchd service from /Users/alichtman/Desktop/Development/projects/open_tab_tracker/open_tab_tracker/system_jobs/com.alichtman.open_tab_tracker.plist to /Library/LaunchAgents
+2023-09-11T06:26:16.503028-0700 ERROR Permission denied. Please run with sudo or as root to install launchd service.
+2023-09-11T06:26:28.121990-0700 INFO Database created at /Users/alichtman/.local/share/open_tab_tracker.db
+2023-09-11T06:26:28.122649-0700 INFO Installing daemon
+2023-09-11T06:26:28.122862-0700 INFO Installing launchd service from /Users/alichtman/Desktop/Development/projects/open_tab_tracker/open_tab_tracker/system_jobs/com.alichtman.open_tab_tracker.plist to /Library/LaunchAgents
+2023-09-11T06:26:28.123629-0700 INFO Loading launchd service
+2023-09-11T06:27:53.698707-0700 INFO Database created at /Users/alichtman/.local/share/open_tab_tracker.db
+2023-09-11T06:27:53.699351-0700 INFO Installing daemon
+2023-09-11T06:27:53.699550-0700 INFO Installing launchd service from /Users/alichtman/Desktop/Development/projects/open_tab_tracker/open_tab_tracker/system_jobs/com.alichtman.open_tab_tracker.plist to /Library/LaunchAgents
+2023-09-11T06:27:53.700073-0700 INFO Loading launchd service

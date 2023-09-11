@@ -11,6 +11,15 @@ class Database:
         self.database_file = xdg_data_home() / "open_tab_tracker.db"
         self.create_db_and_datatable_if_not_exists()
 
+    @staticmethod
+    def convert_utc_datetime_to_local_formatted_string(utc_time_str: str):
+        utc_datetime: datetime = datetime.strptime(
+            utc_time_str, "%Y-%m-%d %H:%M:%S.%f%z"
+        )
+        current_timezone = utc_datetime.replace(tzinfo=timezone.utc).astimezone(tz=None)
+        logger.debug(f"Converted {utc_time_str} to {current_timezone}")
+        return current_timezone.strftime("%m/%d/%y %I:%M%p")
+
     def create_db_and_datatable_if_not_exists(self):
         conn = sql.connect(self.database_file)
         logger.info(f"Database created at {self.database_file}")
@@ -45,7 +54,10 @@ class Database:
         logger.info(f"Deleting database from {self.database_file}")
         os.remove(self.database_file)
 
-    def print_dataframe(df: pd.DataFrame):
+    def print_database(self):
+        self.print_dataframe(self.get_database_values_as_dataframe())
+
+    def print_dataframe(self, df: pd.DataFrame):
         with pd.option_context("display.max_rows", None, "display.max_columns", None):
             print(df)
 
@@ -57,5 +69,8 @@ class Database:
         rows = cur.fetchall()
         conn.close()
         df = pd.DataFrame(rows, columns=["datetime", "firefox_tab_count"])
+        df["datetime"] = df["datetime"].apply(
+            lambda x: self.convert_utc_datetime_to_local_formatted_string(x)
+        )
         df["firefox_tab_count"].astype(int)
         return df
