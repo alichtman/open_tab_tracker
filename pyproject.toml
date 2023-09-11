@@ -14,9 +14,11 @@ xdg-base-dirs = "^6.0.0"
 loguru = "^0.7.0"
 click = "^8.1.7"
 seaborn = "^0.12.2"
+plotly = "^5.16.1"
 
 [tool.poetry.group.dev.dependencies]
 better-exceptions = "^0.3.3"
+black = "^23.9.1"
 
 [build-system]
 requires = ["poetry-core"]
