@@ -2,12 +2,24 @@ from pathlib import Path
 import subprocess
 from shutil import which
 from .browser import Browser
+from ctypes import *
+from .filesystem import get_python_project_root_dir
 
 LZ4JSONCAT = "lz4jsoncat"
 JQ = "jq"
 
 
 class Firefox(Browser):
+    # TODO: Finish integrating lz4jsoncat so
+    @staticmethod
+    def run_lz4jsoncat_on_file(file: Path) -> str:
+        lz4jsoncat = CDLL(get_python_project_root_dir() / "lib/lz4jsoncat.so")
+        print(lz4jsoncat)
+        print("Running lz4jsoncat on file")
+        print(file)
+        print(lz4jsoncat.main(str(file)))
+        return lz4jsoncat.main(str(file))
+
     @classmethod
     def check_for_deps(self):
         if which(LZ4JSONCAT) is None:
@@ -39,9 +51,10 @@ class Firefox(Browser):
     def get_tab_count(self):
         recovery_file = Firefox.get_firefox_recovery_file()
         try:
-            unpacked_json = subprocess.run(
-                [LZ4JSONCAT, recovery_file], stdout=subprocess.PIPE
-            ).stdout
+            # unpacked_json = subprocess.run(
+            #     [LZ4JSONCAT, recovery_file], stdout=subprocess.PIPE
+            # ).stdout
+            unpacked_json = Firefox.run_lz4jsoncat_on_file(recovery_file)
             tab_count = subprocess.run(
                 [JQ, ".windows[].tabs | length"],
                 input=unpacked_json,

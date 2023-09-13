@@ -1,11 +1,11 @@
 import click
 from loguru import logger
-
+import platform
 from open_tab_tracker.__about__ import __version__
 from .database import Database
 from .firefox import Firefox
 from .graphing import draw_graph
-from .install import install_service_for_current_platform
+from .install import install_crontab_entry, uninstall_crontab_entry
 
 
 def get_current_tab_count_and_write_to_database(database: Database):
@@ -14,22 +14,42 @@ def get_current_tab_count_and_write_to_database(database: Database):
     database.write_to_database(firefox_tab_count)
 
 
-@click.command(epilog='See the project homepage for more details: https://github.com/alichtman/open_tab_tracker')
+def validate_platform():
+    match platform.system():
+        case "Linux":
+            pass
+        case "Darwin":
+            pass
+        case "Windows":
+            raise NotImplementedError("Windows is not yet supported")
+        case _:
+            raise NotImplementedError("Your platform is not yet supported")
+
+
+@click.command(
+    epilog="See the project homepage for more details: https://github.com/alichtman/open_tab_tracker",
+    context_settings=dict(help_option_names=["-h", "-help", "--help"]),
+)
 @click.option("--add_datapoint", "-a", is_flag=True, help="Add a datapoint")
-@click.option("--daemon", is_flag=True, help="Run as a daemon")
 @click.option(
     "--install",
+    "-i",
     is_flag=True,
-    help="Automatically install the daemon and run at startup",
+    help="Install in crontab to run at startup",
 )
-@click.option("--graph", is_flag=True, help="Graph the data")
+@click.option(
+    "--uninstall",
+    is_flag=True,
+    help="Uninstall from crontab",
+)
 @click.option("--drop-database", is_flag=True, help="Drop the database")
 @click.option("--print_db", is_flag=True, help="Print the database")
 @click.option("--version", "-v", is_flag=True, help="Print the version")
-def run(add_datapoint, daemon, graph, print_db, install, drop_database, version):
+def run(add_datapoint, print_db, install, drop_database, uninstall, version):
     """Open Tab Tracker"""
+    validate_platform()
     if version:
-        print(f"Open Tab Tracker {__version__}")
+        print(f"open-tab-tracker {__version__}")
         return
     database = Database()
     if drop_database:
@@ -40,13 +60,14 @@ def run(add_datapoint, daemon, graph, print_db, install, drop_database, version)
         database.print_database()
         return
     elif install:
-        logger.info("Installing daemon")
-        install_service_for_current_platform()
+        logger.info("Installing crontab")
+        install_crontab_entry()
         return
+    elif uninstall:
+        uninstall_crontab_entry()
 
     if add_datapoint:
+        logger.info("Adding datapoint!")
         get_current_tab_count_and_write_to_database(database)
-
-    if graph:
+    else:
         draw_graph(database.get_database_values_as_dataframe())
-        pass
