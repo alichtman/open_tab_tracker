@@ -1,34 +1,42 @@
-[tool.poetry]
+[project]
 name = "open-tab-tracker"
-version = "0.1.0"
 description = "Graphs how many open tabs you have in your browsers."
-authors = ["Aaron Lichtman <aaronlichtman@gmail.com>"]
 license = "MIT"
 readme = "README.md"
+requires-python = ">=3.8"
+dynamic = ["version"]
+authors = [{ name = "Aaron Lichtman", email = "aaronlichtman@gmail.com" }]
+keywords = ["tab", "tracking", "firefox", "chrome", "browser"]
+dependencies = [
+	"pandas",
+	"xdg-base-dirs",
+	"loguru",
+	"click",
+	"plotly",
+	"launchd",
+	# DEV DEPS BELOW
+	# I am having trouble getting hatch to cooperate with building a strictly dev env,
+	# so we're throwing them in with the critical deps. Sorry.
+	"rope",
+	"better-exceptions",
+	"black"
+]
 
 [project.urls]
-"Homepage" = "https://github.com/alichtman/open_tab_tracker"
-"Bug Tracker" = "https://github.com/alichtman/open_tab_tracker/issues"
+"Source Code" = "https://github.com/alichtman/open_tab_tracker"
+"Issue Tracker" = "https://github.com/alichtman/open_tab_tracker/issues"
+
+[tool.hatch.version]
+path = "open_tab_tracker/__about__.py"
+
+[project.scripts]
+open-tab-tracker = "open_tab_tracker:run"
+ott = "open_tab_tracker:run"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[tool.poetry.dependencies]
-python = "^3.11"
-matplotlib = "^3.7.2"
-pandas = "^2.0.3"
-xdg-base-dirs = "^6.0.0"
-loguru = "^0.7.0"
-click = "^8.1.7"
-seaborn = "^0.12.2"
-plotly = "^5.16.1"
-launchd = "^0.3.0"
-
-[tool.poetry.group.dev.dependencies]
-better-exceptions = "^0.3.3"
-black = "^23.9.1"
-
-# [build-system]
-# requires = ["poetry-core"]
-# build-backend = "poetry.core.masonry.api"
+[tool.hatch.build]
+include = ["open_tab_tracker/*"]
+artifacts = ["dist/*"]

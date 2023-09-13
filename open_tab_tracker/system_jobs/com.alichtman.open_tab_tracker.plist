@@ -6,7 +6,7 @@
     <string>com.alichtman.open_tab_tracker</string>
     <key>ProgramArguments</key>
     <array>
-    <string>~/.local/bin/open_tab_tracker</string>
+    <string>{PATH_TO_OPEN_TAB_TRACKER_EXECUTABLE}</string>
     <string> --add_datapoint</string>
     </array>
     <key>StartInterval</key>

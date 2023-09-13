@@ -1,3 +1,0 @@
-```
-$ poetry publish --build
-```

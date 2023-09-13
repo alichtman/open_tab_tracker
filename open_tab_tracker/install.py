@@ -9,6 +9,7 @@ from dataclasses import dataclass
 from .filesystem import get_python_project_root_dir
 from pathlib import Path
 from os import getuid
+import subprocess
 import sys
 
 
@@ -58,15 +59,29 @@ def install_systemd_service():
 LAUNCHD_SERVICE_NAME = "com.alichtman.open_tab_tracker"
 
 
+def get_open_tab_tracker_executable_path():
+    which = shutil.which("open_tab_tracker")
+    if which:
+        return which
+    else:
+        raise FileNotFoundError(
+            "Could not find open_tab_tracker executable. Please install open_tab_tracker with `pip install open_tab_tracker`")
+
+
 def install_launchd_service():
+    plist_name = "com.alichtman.open_tab_tracker.plist"
     local_plist = (
-        get_python_project_root_dir()
-        / "open_tab_tracker/system_jobs/com.alichtman.open_tab_tracker.plist"
+        get_python_project_root_dir() / "open_tab_tracker/system_jobs" / plist_name
     )
-    launch_agents_dir = Path("/Library/LaunchAgents")
-    logger.info(f"Installing launchd service from {local_plist} to {launch_agents_dir}")
+    real_launch_agent_path = Path("/Library/LaunchAgents") / plist_name
+    logger.info(f"Installing launchd service from {local_plist} to {real_launch_agent_path}")
     try:
-        shutil.copy(local_plist, launch_agents_dir)
+        shutil.copy(local_plist, real_launch_agent_path)
+        logger.info("Copied plist to /Library/LaunchAgents")
+        with open(real_launch_agent_path, "r+") as f:
+            marker = "{PATH_TO_OPEN_TAB_TRACKER_EXECUTABLE}"
+            plist_contents = f.read().replace(marker, get_open_tab_tracker_executable_path())
+            f.write(plist_contents)
     except PermissionError:
         logger.error(
             "Permission denied. Please run with sudo or as root to install launchd service."
@@ -87,7 +102,7 @@ def install_launchd_service():
         [
             launchctl,
             "load",
-            "/Library/LaunchAgents/com.alichtman.open_tab_tracker.plist",
+            real_launch_agent_path,
         ],
         stdout=PIPE,
         stderr=PIPE,
