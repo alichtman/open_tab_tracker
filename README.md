@@ -42,6 +42,14 @@ Options:
   https://github.com/alichtman/open_tab_tracker
 ```
 
+## Support
+
+| OS       | Firefox          | Chrome / Chromium  | Safari           |
+|--------- |----------------- |------------------- |----------------- |
+| Linux    | Not Implemented  | Not Implemented    | Not Implemented  |
+| macOS    | Works            | Not Implemented    | Not Implemented  |
+| Windows  | Not Implemented  | Not Implemented    | Not Implemented  |
+
 ## Technical Details
 
 -   Data is stored in a `sqlite3` database at `$XDG_DATA_HOME/open_tab_tracker.db`.
