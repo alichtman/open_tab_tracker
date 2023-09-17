@@ -3,7 +3,7 @@ from loguru import logger
 import platform
 from open_tab_tracker.__about__ import __version__
 from .database import Database
-from .firefox import Firefox
+from .browsers.firefox import Firefox
 from .graphing import draw_graph
 from .install import install_crontab_entry, uninstall_crontab_entry
 
