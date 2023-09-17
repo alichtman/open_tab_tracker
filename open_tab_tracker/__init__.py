@@ -30,14 +30,15 @@ def validate_platform():
     is_flag=True,
     help="Install in crontab to run at startup",
 )
+
+@click.option("--drop-database", is_flag=True, help="Drop the database")
+@click.option("--graph", is_flag=True, help="Opens the graph in a browser")
+@click.option("--print_db", is_flag=True, help="Print the database")
 @click.option(
     "--uninstall",
     is_flag=True,
     help="Uninstall from crontab",
 )
-@click.option("--drop-database", is_flag=True, help="Drop the database")
-@click.option("--graph", is_flag=True, help="Opens the graph in a browser")
-@click.option("--print_db", is_flag=True, help="Print the database")
 @click.option("--version", "-v", is_flag=True, help="Print the version")
 def run(add_datapoint, print_db, graph, install, drop_database, uninstall, version):
     """Open Tab Tracker"""

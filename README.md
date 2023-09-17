@@ -12,6 +12,30 @@ This package has not been released anywhere, so you'll have to run it by cloning
 $ git clone git@github.com:alichtman/open_tab_tracker.git
 $ cd open_tab_tracker
 $ pip3 install .
+$ open-tab-tracker --install
+$ open-tab-tracker --graph
+```
+
+## Usage
+
+```bash
+$ open-tab-tracker --help
+Usage: open-tab-tracker [OPTIONS]
+
+  Open Tab Tracker
+
+Options:
+  -a, --add_datapoint  Add a datapoint
+  -i, --install        Install in crontab to run at startup
+  --drop-database      Drop the database
+  --graph              Opens the graph in a browser
+  --print_db           Print the database
+  --uninstall          Uninstall from crontab
+  -v, --version        Print the version
+  -help, -h, --help    Show this message and exit.
+
+  See the project homepage for more details:
+  https://github.com/alichtman/open_tab_tracker
 ```
 
 ## Technical Details
