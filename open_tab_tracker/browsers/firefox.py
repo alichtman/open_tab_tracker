@@ -9,9 +9,10 @@ import json
 class Firefox(Browser):
     @staticmethod
     def lz4json_decompress_file(file: Path) -> Dict[str, Any]:
-        """Decompresses a Firefox recovery file and returns the JSON.
-        Mozilla uses a variant of LZ4 compression for their recovery files.
-        The first 8 bytes of the file are `mozLz40`, and the next 4 bytes (little endian int) are the uncompressed size.
+        """Decompresses a Firefox recovery file and returns a JSON dictionary.
+        Mozilla uses a non-standard format for their LZ4 compressed recovery files: https://superuser.com/a/1363751
+        The first 8 bytes of the file are `mozLz40`, the next 4 bytes (little endian int) are the uncompressed size,
+        and all data afterwards is the compressed data.
 
         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4
         +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+

@@ -3,18 +3,8 @@ from loguru import logger
 import platform
 from open_tab_tracker.__about__ import __version__
 from .database import Database
-from .browsers.firefox import Firefox
 from .graphing import draw_graph
 from .install import install_crontab_entry, uninstall_crontab_entry
-
-
-def get_current_tab_count_and_write_to_database(database: Database):
-    firefox_tab_count = Firefox().tab_count
-    if firefox_tab_count is None:
-        logger.error("Could not get Firefox tab count. Skipping.")
-        return
-    logger.info(f"Current firefox tab count: {firefox_tab_count}")
-    database.write_to_database(firefox_tab_count)
 
 
 def validate_platform():
@@ -46,9 +36,10 @@ def validate_platform():
     help="Uninstall from crontab",
 )
 @click.option("--drop-database", is_flag=True, help="Drop the database")
+@click.option("--graph", is_flag=True, help="Opens the graph in a browser")
 @click.option("--print_db", is_flag=True, help="Print the database")
 @click.option("--version", "-v", is_flag=True, help="Print the version")
-def run(add_datapoint, print_db, install, drop_database, uninstall, version):
+def run(add_datapoint, print_db, graph, install, drop_database, uninstall, version):
     """Open Tab Tracker"""
     validate_platform()
     if version:
@@ -56,22 +47,21 @@ def run(add_datapoint, print_db, install, drop_database, uninstall, version):
         return
     database = Database()
     if drop_database:
-        logger.warning("Dropping database")
         database.drop_database()
         return
     elif print_db:
         database.print_database()
         return
     elif install:
-        logger.info("Installing crontab")
         install_crontab_entry()
         return
     elif uninstall:
         uninstall_crontab_entry()
         return
-
-    if add_datapoint:
-        logger.info("Adding datapoint!")
-        get_current_tab_count_and_write_to_database(database)
+    elif graph:
+        draw_graph(database.get_database_values_as_dataframe())
+        return
+    elif add_datapoint:
+        database.add_current_tab_counts_to_db()
     else:
         draw_graph(database.get_database_values_as_dataframe())

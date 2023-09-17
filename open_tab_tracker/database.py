@@ -2,6 +2,7 @@ from datetime import datetime, timezone
 from loguru import logger
 import pandas as pd
 from xdg_base_dirs import xdg_data_home
+from .browsers.firefox import Firefox
 import sqlite3 as sql
 import os
 
@@ -10,6 +11,15 @@ class Database:
     def __init__(self):
         self.database_file = xdg_data_home() / "open_tab_tracker.db"
         self.create_db_and_datatable_if_not_exists()
+
+    def add_current_tab_counts_to_db(self):
+        logger.info("Adding datapoint!")
+        firefox_tab_count = Firefox().tab_count
+        if firefox_tab_count is None:
+            logger.error("Could not get Firefox tab count. Skipping.")
+            return
+        logger.info(f"Current firefox tab count: {firefox_tab_count}")
+        self.write_to_database(firefox_tab_count)
 
     @staticmethod
     def convert_utc_datetime_to_local_formatted_string(utc_time_str: str):
@@ -53,7 +63,7 @@ class Database:
         conn.close()
 
     def drop_database(self):
-        logger.info(f"Deleting database from {self.database_file}")
+        logger.warning(f"Deleting database from {self.database_file}")
         os.remove(self.database_file)
 
     def print_database(self):

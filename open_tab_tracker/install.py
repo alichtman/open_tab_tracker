@@ -43,6 +43,7 @@ def get_crontab_entries(cron: CronTab) -> list[CronItem] | None:
 
 
 def install_crontab_entry():
+    logger.info("Installing in crontab...")
     user_cron = CronTab(user=True)
     existing_entries = get_crontab_entries(user_cron)
     if existing_entries:
