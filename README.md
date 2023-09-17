@@ -1,8 +1,12 @@
-# open_tab_tracker.py
+# Open Tab Tracker
 
 This tool tracks the count of open tabs you have, and plots them over time.
 
-![](plot.png)
+When I'm working on a problem, or exploring a new idea, I'll open a new browser window and start searching. I'll discover related ideas that I should look into, new things to learn, and often, _more problems_ to work on. I thought it would be neat to be able to display this data visually.
+
+This is what my open tab chart looked like while I was working on this project. You can see the points in time where I solved a problem I was working on _(sharp decrease in open tabs)_, and the points where I discovered new problems to solve _(sharp increase in open tabs)_.
+
+![](images/finished-project.png)
 
 ## Installation
 
@@ -40,5 +44,5 @@ Options:
 
 ## Technical Details
 
-- Data is stored in a `sqlite3` database at `$XDG_DATA_HOME/open_tab_tracker.db`.
-- Firefox tab counts are derived from your firefox profile session backup recovery files. You can read the implementation in [`browsers/firefox.py`](https://github.com/alichtman/open_tab_tracker/blob/main/open_tab_tracker/browsers/firefox.py).
+-   Data is stored in a `sqlite3` database at `$XDG_DATA_HOME/open_tab_tracker.db`.
+-   Firefox tab counts are derived from your firefox profile session backup recovery files. You can read the implementation in [`browsers/firefox.py`](https://github.com/alichtman/open_tab_tracker/blob/main/open_tab_tracker/browsers/firefox.py).
