@@ -1,6 +1,6 @@
 # Developing, Building, and Releasing
 
-`open_tab_tracker` uses [`hatch`](https://hatch.pypa.io/latest/) for dependency management, version management, building, and publishing.
+`open-tab-tracker` uses [`hatch`](https://hatch.pypa.io/latest/) for dependency management, version management, building, and publishing.
 
 ## Developing
 
