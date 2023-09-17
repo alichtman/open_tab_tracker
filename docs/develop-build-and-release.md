@@ -7,12 +7,17 @@
 ```bash
 $ git clone git@github.com:alichtman/open_tab_tracker.git
 $ cd open_tab_tracker
+$ hatch shell
 $ pip3 install .
 $ open-tab-tracker -v
 Open Tab Tracker v0.0.1
 ```
 
 Make whatever changes you'd like, and re-run the `$ pip3 install` command to install the binary on your system.
+
+## Adding Dependencies
+
+Add your dependency manually to the `pyproject.toml` file and re-run `$ pip3 install .`.
 
 ## Building
 

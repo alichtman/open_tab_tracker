@@ -1,23 +1,40 @@
 from pathlib import Path
-import subprocess
-from shutil import which
+from typing import Any, Dict
 from .browser import Browser
-
-LZ4JSONCAT = "lz4jsoncat"
-JQ = "jq"
+import lz4.block
+import jq
+import json
 
 
 class Firefox(Browser):
-    @classmethod
-    def check_for_deps(self):
-        if which(LZ4JSONCAT) is None:
-            raise Exception(
-                "lz4jsoncat not found in $PATH. Please install it from https://github.com/andikleen/lz4json"
-            )
-        if which(JQ) is None:
-            raise Exception(
-                "jq not found in $PATH. Please install it from https://github.com/jqlang/jq"
-            )
+    @staticmethod
+    def lz4json_decompress_file(file: Path) -> Dict[str, Any]:
+        """Decompresses a Firefox recovery file and returns the JSON.
+        Mozilla uses a variant of LZ4 compression for their recovery files.
+        The first 8 bytes of the file are `mozLz40`, and the next 4 bytes (little endian int) are the uncompressed size.
+
+        0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        |     mozLz40   | size  |   compressed data.... |
+        +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+        """
+        with open(file, "rb") as f:
+            magic = f.read(8)
+            if magic != b"mozLz40\0":
+                raise Exception("Not a Firefox recovery file")
+            f.seek(8)
+            uncompressed_size = int.from_bytes(f.read(4), byteorder="little")
+            f.seek(12)
+            compressed = f.read()
+            try:
+                decompressed = lz4.block.decompress(compressed, uncompressed_size)
+            except lz4.block.LZ4BlockError:
+                raise Exception("Something wrong with lz4 decompression")
+        try:
+            decompressed = json.loads(decompressed)
+            return decompressed
+        except json.decoder.JSONDecodeError:
+            raise Exception("Something wrong with JSON decoding")
 
     @classmethod
     def get_firefox_recovery_file(self):
@@ -39,14 +56,12 @@ class Firefox(Browser):
     def get_tab_count(self):
         recovery_file = Firefox.get_firefox_recovery_file()
         try:
-            unpacked_json = subprocess.run(
-                [LZ4JSONCAT, recovery_file], stdout=subprocess.PIPE
-            ).stdout
-            tab_count = subprocess.run(
-                [JQ, ".windows[].tabs | length"],
-                input=unpacked_json,
-                stdout=subprocess.PIPE,
-            ).stdout.decode("utf-8")
+            unpacked_json: Dict[str, Any] = Firefox.lz4json_decompress_file(
+                recovery_file
+            )
+            tab_count = (
+                jq.compile(".windows[].tabs | length").input(unpacked_json).first()
+            )
             return tab_count
         except Exception as e:
             print(f"Something went wrong getting the tab count.\n\n{e}")

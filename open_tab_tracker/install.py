@@ -1,126 +1,66 @@
-import platform
-
-#  import plistlib
+from rich.console import Console
 import shutil
 from loguru import logger
-from enum import Enum
-from subprocess import run, PIPE
-from dataclasses import dataclass
-from .filesystem import get_python_project_root_dir
 from pathlib import Path
-from os import getuid
-import subprocess
-import sys
+import inspect, os.path
+from crontab import CronTab, CronItem
 
-
-@dataclass
-class UnsupportedOSException(Exception):
-    message: str = "Unsupported OS"
-
-    def __str__(self):
-        return f"Unsupported OS : {self.message}"
-
-
-class SupportedOS(Enum):
-    MACOS = "Darwin"
-    LINUX = "Linux"
-
-
-def get_current_os() -> SupportedOS:
-    """Returns the current OS as a SupportedOS enum, and raises an UnsupportedOSException if the OS is not supported."""
-    system = platform.system()
-    if system == "Darwin":
-        return SupportedOS.MACOS
-    elif system == "Linux":
-        return SupportedOS.LINUX
-    else:
-        raise UnsupportedOSException(f"Unsupported OS: {platform.system()}")
-
-
-OS = get_current_os()
-
-
-if OS == SupportedOS.MACOS:
-    from launchd import plist
-elif OS == SupportedOS.LINUX:
-    # Install some systemd something
-    pass
-
-
-def install_systemd_service():
-    pass
-
-
-#########
-# LAUNCHD
-#########
-
-
-LAUNCHD_SERVICE_NAME = "com.alichtman.open_tab_tracker"
+console = Console()
 
 
 def get_open_tab_tracker_executable_path():
+    # Check if executable is installed on $PATH
     which = shutil.which("open_tab_tracker")
     if which:
+        logger.info("Found open_tab_tracker executable at {which}")
         return which
     else:
-        raise FileNotFoundError(
-            "Could not find open_tab_tracker executable. Please install open_tab_tracker with `pip install open_tab_tracker`")
+        # Maybe we're in the hatch dev env? We can grab the bin path from the filename
+        filename = inspect.getframeinfo(inspect.currentframe()).filename
+        logger.info(f"Filename: {filename}")
+        path = os.path.dirname(os.path.abspath(filename))
+        pkg_name = "open-tab-tracker"
+        path = filename[: filename.rfind(f"{pkg_name}/")] + f"{pkg_name}/bin/{pkg_name}"
+        logger.info(f"Path: {path}")
+        if Path(path).exists():
+            logger.info(f"Found open_tab_tracker executable in hatch dev env at {path}")
+            return path
+        else:
+            raise FileNotFoundError(
+                "Could not find open_tab_tracker executable. Make sure it is on your $PATH. You can check with `$ which open_tab_tracker`"
+            )
 
 
-def install_launchd_service():
-    plist_name = "com.alichtman.open_tab_tracker.plist"
-    local_plist = (
-        get_python_project_root_dir() / "open_tab_tracker/system_jobs" / plist_name
+CRONTAB_COMMENT = "open_tab_tracker"
+
+
+def get_crontab_entries(cron: CronTab) -> list[CronItem] | None:
+    entries = list(cron.find_comment(CRONTAB_COMMENT))
+    if len(entries) == 0:
+        return None
+    else:
+        return entries
+
+
+def install_crontab_entry():
+    user_cron = CronTab(user=True)
+    existing_entries = get_crontab_entries(user_cron)
+    if existing_entries:
+        logger.info("Crontab entries already exist. Skipping.")
+        return
+
+    job = user_cron.new(
+        command=f'"{get_open_tab_tracker_executable_path()}" --add_datapoint > /dev/null',
+        comment=CRONTAB_COMMENT,
     )
-    real_launch_agent_path = Path("/Library/LaunchAgents") / plist_name
-    logger.info(f"Installing launchd service from {local_plist} to {real_launch_agent_path}")
-    try:
-        shutil.copy(local_plist, real_launch_agent_path)
-        logger.info("Copied plist to /Library/LaunchAgents")
-        with open(real_launch_agent_path, "r+") as f:
-            marker = "{PATH_TO_OPEN_TAB_TRACKER_EXECUTABLE}"
-            plist_contents = f.read().replace(marker, get_open_tab_tracker_executable_path())
-            f.write(plist_contents)
-    except PermissionError:
-        logger.error(
-            "Permission denied. Please run with sudo or as root to install launchd service."
-        )
-        sys.exit(1)
-
-    ######
-    # TODO: This does not work. Follow this guide: https://andypi.co.uk/2023/02/14/how-to-run-a-python-script-as-a-service-on-mac-os/
-
-    # - Need to add variables to the launchd plist that I replace with system-specific paths
-    ######
-    logger.info("Loading launchd service")
-    launchd_target = f"gui/{getuid()}/{LAUNCHD_SERVICE_NAME}"
-    launchctl = "/bin/launchctl"
-    run([launchctl, "bootstrap", launchd_target], stdout=PIPE, stderr=PIPE)
-    run([launchctl, "kickstart", "-k", launchd_target], stdout=PIPE, stderr=PIPE)
-    run(
-        [
-            launchctl,
-            "load",
-            real_launch_agent_path,
-        ],
-        stdout=PIPE,
-        stderr=PIPE,
-    )
-
-    # Start launchd service
+    job.minute.every(5)
+    job.run()
+    user_cron.write()
+    logger.info("Added a new crontab entry and executed it.")
 
 
-def uninstall_launchd_service():
-    pass
-
-
-def install_service_for_current_platform():
-    if OS == SupportedOS.LINUX:
-        logger.info("Installing systemd service")
-        install_systemd_service()
-        # TODO: Start job?
-        pass
-    elif OS == SupportedOS.MACOS:
-        install_launchd_service()
-        # TODO: Start job?
+def uninstall_crontab_entry():
+    logger.info("Removing crontab entry if it exists...")
+    user_cron = CronTab(user=True)
+    user_cron.remove_all(comment=CRONTAB_COMMENT)
+    user_cron.write()

@@ -3,7 +3,7 @@ name = "open-tab-tracker"
 description = "Graphs how many open tabs you have in your browsers."
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.10"
 dynamic = ["version"]
 authors = [{ name = "Aaron Lichtman", email = "aaronlichtman@gmail.com" }]
 keywords = ["tab", "tracking", "firefox", "chrome", "browser"]
@@ -14,12 +14,16 @@ dependencies = [
 	"click",
 	"plotly",
 	"launchd",
+	"rich",
+	"python-crontab",
+	"lz4",
+	"jq",
 	# DEV DEPS BELOW
 	# I am having trouble getting hatch to cooperate with building a strictly dev env,
 	# so we're throwing them in with the critical deps. Sorry.
 	"rope",
 	"better-exceptions",
-	"black"
+	"black",
 ]
 
 [project.urls]

@@ -17,12 +17,14 @@ class Database:
             utc_time_str, "%Y-%m-%d %H:%M:%S.%f%z"
         )
         current_timezone = utc_datetime.replace(tzinfo=timezone.utc).astimezone(tz=None)
-        logger.debug(f"Converted {utc_time_str} to {current_timezone}")
+        # logger.debug(f"Converted {utc_time_str} to {current_timezone}")
         return current_timezone.strftime("%m/%d/%y %I:%M%p")
 
     def create_db_and_datatable_if_not_exists(self):
         conn = sql.connect(self.database_file)
-        logger.info(f"Database created at {self.database_file}")
+        logger.info(
+            f"Creating database (if didn't already exist) at {self.database_file}"
+        )
         cursor = conn.cursor()
         cursor.execute(
             "CREATE TABLE IF NOT EXISTS tab_count (datetime TEXT, firefox_tab_count INTEGER)"
