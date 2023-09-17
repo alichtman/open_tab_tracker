@@ -50,13 +50,13 @@ def install_crontab_entry():
         return
 
     job = user_cron.new(
-        command=f'PATH=$PATH:{shutil.which("lz4jsoncat")} "{get_open_tab_tracker_executable_path()}" --add_datapoint',
+        command=f'"{get_open_tab_tracker_executable_path()}" --add_datapoint > /dev/null',
         comment=CRONTAB_COMMENT,
     )
-    job.minute.every(1)
+    job.minute.every(5)
     job.run()
     user_cron.write()
-    logger.info("Added a new crontab entry.")
+    logger.info("Added a new crontab entry and executed it.")
 
 
 def uninstall_crontab_entry():

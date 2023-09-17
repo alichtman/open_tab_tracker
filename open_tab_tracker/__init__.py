@@ -10,6 +10,9 @@ from .install import install_crontab_entry, uninstall_crontab_entry
 
 def get_current_tab_count_and_write_to_database(database: Database):
     firefox_tab_count = Firefox().tab_count
+    if firefox_tab_count is None:
+        logger.error("Could not get Firefox tab count. Skipping.")
+        return
     logger.info(f"Current firefox tab count: {firefox_tab_count}")
     database.write_to_database(firefox_tab_count)
 
@@ -65,6 +68,7 @@ def run(add_datapoint, print_db, install, drop_database, uninstall, version):
         return
     elif uninstall:
         uninstall_crontab_entry()
+        return
 
     if add_datapoint:
         logger.info("Adding datapoint!")

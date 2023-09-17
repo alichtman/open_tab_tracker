@@ -16,6 +16,8 @@ dependencies = [
 	"launchd",
 	"rich",
 	"python-crontab",
+	"lz4",
+	"jq",
 	# DEV DEPS BELOW
 	# I am having trouble getting hatch to cooperate with building a strictly dev env,
 	# so we're throwing them in with the critical deps. Sorry.
