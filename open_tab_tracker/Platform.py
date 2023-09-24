@@ -1,5 +1,6 @@
 import platform
 from enum import Enum
+from loguru import logger
 
 class OS(Enum):
 	LINUX = 1

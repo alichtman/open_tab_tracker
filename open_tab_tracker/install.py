@@ -10,9 +10,9 @@ console = Console()
 
 def get_open_tab_tracker_executable_path():
     # Check if executable is installed on $PATH
-    which = shutil.which("open_tab_tracker")
+    which = shutil.which("open-tab-tracker")
     if which:
-        logger.info("Found open_tab_tracker executable at {which}")
+        logger.info("Found open-tab-tracker executable at {which}")
         return which
     else:
         # Maybe we're in the hatch dev env? We can grab the bin path from the filename
@@ -23,11 +23,11 @@ def get_open_tab_tracker_executable_path():
         path = filename[: filename.rfind(f"{pkg_name}/")] + f"{pkg_name}/bin/{pkg_name}"
         logger.info(f"Path: {path}")
         if Path(path).exists():
-            logger.info(f"Found open_tab_tracker executable in hatch dev env at {path}")
+            logger.info(f"Found open-tab-tracker executable in hatch dev env at {path}")
             return path
         else:
             raise FileNotFoundError(
-                "Could not find open_tab_tracker executable. Make sure it is on your $PATH. You can check with `$ which open_tab_tracker`"
+                "Could not find open-tab-tracker executable. Make sure it is on your $PATH. You can check with `$ which open-tab-tracker`"
             )
 
 

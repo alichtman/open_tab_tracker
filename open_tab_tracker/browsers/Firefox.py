@@ -1,7 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict
-
-from open_tab_tracker.Platform import OS
+from loguru import logger
+from open_tab_tracker.Platform import Platform, OS
 from .Browser import Browser
 import lz4.block
 import jq
@@ -9,6 +9,9 @@ import json
 
 
 class Firefox(Browser):
+    
+    def __init__(self, current_os: OS):
+        super().__init__(current_os)
     
     @staticmethod
     def lz4json_decompress_file(file: Path) -> Dict[str, Any]:
@@ -41,11 +44,12 @@ class Firefox(Browser):
     @classmethod
     def get_firefox_recovery_file(self):
         """Returns the first recovery file found for Firefox, or None. Currently only works on macOS."""
-        if self.current_os == OS.MAC:
-            firefox_profiles = Path.home() / "Library/Application Support/Firefox/Profiles/"
-        elif self.current_os == OS.LINUX:
-            firefox_profiles = Path.home() / "snap/firefox/common/.mozilla/firefox/"
-            
+        match Platform().get_current_os():
+            case OS.MAC:
+                firefox_profiles = Path.home() / "Library/Application Support/Firefox/Profiles/"
+            case OS.LINUX:
+                firefox_profiles = Path.home() / "snap/firefox/common/.mozilla/firefox/"
+
         firefox_profiles = list(firefox_profiles.glob("*.default*"))
         if len(firefox_profiles) == 0:
             raise Exception(
@@ -53,6 +57,7 @@ class Firefox(Browser):
             )
 
         for profile in firefox_profiles:
+            logger.info(f"Checking for recovery file in {profile}")
             recovery_file = Path(profile) / "sessionstore-backups/recovery.jsonlz4"
             if recovery_file.exists():
                 return recovery_file

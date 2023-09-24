@@ -11,7 +11,7 @@ from .Platform import Platform
     epilog="See the project homepage for more details: https://github.com/alichtman/open_tab_tracker",
     context_settings=dict(help_option_names=["-h", "-help", "--help"]),
 )
-@click.option("--add_datapoint", "-a", is_flag=True, help="Add a datapoint")
+@click.option("--add-datapoint", "-a", is_flag=True, help="Add a datapoint")
 @click.option(
     "--install",
     "-i",
@@ -21,7 +21,7 @@ from .Platform import Platform
 
 @click.option("--drop-database", is_flag=True, help="Drop the database")
 @click.option("--graph", is_flag=True, help="Opens the graph in a browser")
-@click.option("--print_db", is_flag=True, help="Print the database")
+@click.option("--print-db", is_flag=True, help="Print the database")
 @click.option(
     "--uninstall",
     is_flag=True,
