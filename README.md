@@ -47,9 +47,9 @@ Options:
 
 | OS       | Firefox          | Chrome / Chromium  | Safari           |
 |--------- |----------------- |------------------- |----------------- |
-| Linux    | Works            | Not Implemented    | Not Implemented  |
-| macOS    | Works            | Not Implemented    | Not Implemented  |
-| Windows  | Not Implemented  | Not Implemented    | Not Implemented  |
+| Linux    | :white_check_mark:            | :x:    | :x:  |
+| macOS    | :white_check_mark:            | :x:    | :x:  |
+| Windows  | :x:  | :x:    | :x:  |
 
 ## Technical Details
 
