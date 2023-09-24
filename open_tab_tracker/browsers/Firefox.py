@@ -1,12 +1,15 @@
 from pathlib import Path
 from typing import Any, Dict
-from .browser import Browser
+
+from open_tab_tracker.Platform import OS
+from .Browser import Browser
 import lz4.block
 import jq
 import json
 
 
 class Firefox(Browser):
+    
     @staticmethod
     def lz4json_decompress_file(file: Path) -> Dict[str, Any]:
         """Decompresses a Firefox recovery file and returns a JSON dictionary.
@@ -23,9 +26,7 @@ class Firefox(Browser):
             magic = f.read(8)
             if magic != b"mozLz40\0":
                 raise Exception("Not a Firefox recovery file")
-            f.seek(8)
             uncompressed_size = int.from_bytes(f.read(4), byteorder="little")
-            f.seek(12)
             compressed = f.read()
             try:
                 decompressed = lz4.block.decompress(compressed, uncompressed_size)
@@ -40,11 +41,15 @@ class Firefox(Browser):
     @classmethod
     def get_firefox_recovery_file(self):
         """Returns the first recovery file found for Firefox, or None. Currently only works on macOS."""
-        firefox_profiles = Path.home() / "Library/Application Support/Firefox/Profiles/"
+        if self.current_os == OS.MAC:
+            firefox_profiles = Path.home() / "Library/Application Support/Firefox/Profiles/"
+        elif self.current_os == OS.LINUX:
+            firefox_profiles = Path.home() / "snap/firefox/common/.mozilla/firefox/"
+            
         firefox_profiles = list(firefox_profiles.glob("*.default*"))
         if len(firefox_profiles) == 0:
             raise Exception(
-                "No Firefox profiles found in ~/Library/Application Support/Firefox/Profiles/"
+                f"No Firefox profiles found in {firefox_profiles}"
             )
 
         for profile in firefox_profiles:

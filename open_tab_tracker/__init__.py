@@ -1,22 +1,10 @@
 import click
-from loguru import logger
-import platform
 from open_tab_tracker.__about__ import __version__
 from .database import Database
 from .graphing import draw_graph
 from .install import install_crontab_entry, uninstall_crontab_entry
+from .Platform import Platform
 
-
-def validate_platform():
-    match platform.system():
-        case "Linux":
-            pass
-        case "Darwin":
-            pass
-        case "Windows":
-            raise NotImplementedError("Windows is not yet supported")
-        case _:
-            raise NotImplementedError("Your platform is not yet supported")
 
 
 @click.command(
@@ -42,7 +30,8 @@ def validate_platform():
 @click.option("--version", "-v", is_flag=True, help="Print the version")
 def run(add_datapoint, print_db, graph, install, drop_database, uninstall, version):
     """Open Tab Tracker"""
-    validate_platform()
+    platform = Platform()
+    platform.validate()
     if version:
         print(f"open-tab-tracker {__version__}")
         return
@@ -63,6 +52,6 @@ def run(add_datapoint, print_db, graph, install, drop_database, uninstall, versi
         draw_graph(database.get_database_values_as_dataframe())
         return
     elif add_datapoint:
-        database.add_current_tab_counts_to_db()
+        database.add_current_tab_counts_to_db(platform.current_os)
     else:
         draw_graph(database.get_database_values_as_dataframe())

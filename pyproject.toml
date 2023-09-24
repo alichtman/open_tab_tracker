@@ -13,7 +13,6 @@ dependencies = [
 	"loguru",
 	"click",
 	"plotly",
-	"launchd",
 	"rich",
 	"python-crontab",
 	"lz4",

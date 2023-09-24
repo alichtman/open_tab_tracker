@@ -1,4 +1,4 @@
-from .browser import Browser
+from .Browser import Browser
 
 
 class Safari(Browser):
