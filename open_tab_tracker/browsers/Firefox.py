@@ -21,7 +21,7 @@ class Firefox(Browser):
 
         0 1 2 3 4 5 6 7 8 9 0 1 2 3 4 5 6 7 8 9 0 1 2 3 4
         +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
-        |     mozLz40   | size  |   compressed data.... |
+        |m o z L z 4 0  | size  | LZ4 compressed data   |
         +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
         """
         with open(file, "rb") as f:
