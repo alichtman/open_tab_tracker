@@ -2,13 +2,25 @@
 
 `open-tab-tracker` uses [`hatch`](https://hatch.pypa.io/latest/) for dependency management, version management, building, and publishing.
 
-## Developing
+## Cloning the repo for development
 
 ```bash
 $ git clone git@github.com:alichtman/open_tab_tracker.git
 $ cd open_tab_tracker
+```
+
+## Developing
+
+From the repo root:
+
+```bash
+# Enter the virtual environment
 $ hatch shell
+
+# Install the package
 $ pip3 install .
+
+# Run it
 $ open-tab-tracker -v
 Open Tab Tracker v0.0.1
 ```
