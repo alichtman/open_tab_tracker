@@ -41,7 +41,7 @@ $ hatch build .
 
 ## Bumping Version
 
-We are managing versioning with `hatch`.
+`hatch` manages the versioning:
 
 ```bash
 $ hatch version [ major / minor / patch ]

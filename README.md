@@ -10,14 +10,11 @@ This is what my open tab chart looked like while I was working on this project. 
 
 ## Installation
 
-This package has not been released anywhere, so you'll have to run it by cloning the git repo:
+This package has been [released on pypi](https://pypi.org/project/open-tab-tracker/0.0.1/).
 
 ```bash
-$ git clone git@github.com:alichtman/open_tab_tracker.git
-$ cd open_tab_tracker
-$ pip3 install .
+$ pipx install open-tab-tracker
 $ open-tab-tracker --install
-$ open-tab-tracker --graph
 ```
 
 ## Usage
@@ -45,11 +42,11 @@ Options:
 
 ## Support
 
-| OS       | Firefox          | Chrome / Chromium  | Safari           |
-|--------- |----------------- |------------------- |----------------- |
-| Linux    | :white_check_mark:            | :x:    | :x:  |
-| macOS    | :white_check_mark:            | :x:    | :x:  |
-| Windows  | :x:  | :x:    | :x:  |
+| OS      | Firefox            | Chrome / Chromium | Safari |
+| ------- | ------------------ | ----------------- | ------ |
+| Linux   | :white_check_mark: | :x:               | :x:    |
+| macOS   | :white_check_mark: | :x:               | :x:    |
+| Windows | :x:                | :x:               | :x:    |
 
 ## Technical Details
 
