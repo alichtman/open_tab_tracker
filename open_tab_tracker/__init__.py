@@ -8,8 +8,11 @@ from .graphing import draw_graph
 from .install import install_crontab_entry, uninstall_crontab_entry
 from .Platform import Platform
 
+
 def configure_logging_to_syslog():
-    handler = logging.handlers.SysLogHandler(facility=SysLogHandler.LOG_DAEMON, address="/dev/log")
+    handler = logging.handlers.SysLogHandler(
+        facility=SysLogHandler.LOG_DAEMON, address="/dev/log"
+    )
     logger.add(handler)
 
 
@@ -24,7 +27,6 @@ def configure_logging_to_syslog():
     is_flag=True,
     help="Install in crontab to run at startup",
 )
-
 @click.option("--drop-database", is_flag=True, help="Drop the database")
 @click.option("--graph", is_flag=True, help="Opens the graph in a browser")
 @click.option("--print-db", is_flag=True, help="Print the database")

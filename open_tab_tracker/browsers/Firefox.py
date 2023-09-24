@@ -9,10 +9,9 @@ import json
 
 
 class Firefox(Browser):
-    
     def __init__(self, current_os: OS):
         super().__init__(current_os)
-    
+
     @staticmethod
     def lz4json_decompress_file(file: Path) -> Dict[str, Any]:
         """Decompresses a Firefox recovery file and returns a JSON dictionary.
@@ -46,15 +45,15 @@ class Firefox(Browser):
         """Returns the first recovery file found for Firefox, or None. Currently only works on macOS."""
         match Platform().get_current_os():
             case OS.MAC:
-                firefox_profiles = Path.home() / "Library/Application Support/Firefox/Profiles/"
+                firefox_profiles = (
+                    Path.home() / "Library/Application Support/Firefox/Profiles/"
+                )
             case OS.LINUX:
                 firefox_profiles = Path.home() / "snap/firefox/common/.mozilla/firefox/"
 
         firefox_profiles = list(firefox_profiles.glob("*.default*"))
         if len(firefox_profiles) == 0:
-            raise Exception(
-                f"No Firefox profiles found in {firefox_profiles}"
-            )
+            raise Exception(f"No Firefox profiles found in {firefox_profiles}")
 
         for profile in firefox_profiles:
             logger.info(f"Checking for recovery file in {profile}")
@@ -69,7 +68,7 @@ class Firefox(Browser):
         Inside the recovery file JSON, tabs are stored in this structure:
 
         windows: [                 # Array of all windows
-            "tabs": [              # Each window has an array of tabs 
+            "tabs": [              # Each window has an array of tabs
                 {
                     "entries": [   # And each tab stores its history in an array of entries
                         {
@@ -85,7 +84,7 @@ class Firefox(Browser):
             ...
         ]
 
-        We can use jq to sum the lengths of all the tabs arrays: 
+        We can use jq to sum the lengths of all the tabs arrays:
         [.windows[].tabs | length] | add
         """
         recovery_file = Firefox.get_firefox_recovery_file()
@@ -94,7 +93,9 @@ class Firefox(Browser):
                 recovery_file
             )
             tab_count = (
-                jq.compile("[.windows[].tabs | length] | add").input(unpacked_json).first()
+                jq.compile("[.windows[].tabs | length] | add")
+                .input(unpacked_json)
+                .first()
             )
             return tab_count
         except Exception as e:
