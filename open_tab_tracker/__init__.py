@@ -3,7 +3,7 @@ import logging.handlers
 from logging.handlers import SysLogHandler
 from loguru import logger
 from open_tab_tracker.__about__ import __version__
-from .database import Database
+from .Database import Database
 from .graphing import draw_graph
 from .install import install_crontab_entry, uninstall_crontab_entry
 from .Platform import Platform
