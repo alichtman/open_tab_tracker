@@ -12,7 +12,7 @@ def get_open_tab_tracker_executable_path():
     # Check if executable is installed on $PATH
     which = shutil.which("open-tab-tracker")
     if which:
-        logger.info("Found open-tab-tracker executable at {which}")
+        logger.info(f"Found open-tab-tracker executable at {which}")
         return which
     else:
         # Maybe we're in the hatch dev env? We can grab the bin path from the filename
@@ -51,7 +51,7 @@ def install_crontab_entry():
         return
 
     job = user_cron.new(
-        command=f'"{get_open_tab_tracker_executable_path()}" --add_datapoint > /dev/null',
+        command=f'"{get_open_tab_tracker_executable_path()}" --add-datapoint > /dev/null',
         comment=CRONTAB_COMMENT,
     )
     job.minute.every(5)
