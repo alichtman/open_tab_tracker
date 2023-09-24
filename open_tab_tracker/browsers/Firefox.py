@@ -60,13 +60,36 @@ class Firefox(Browser):
 
     @classmethod
     def get_tab_count(self):
+        """
+        Inside the recovery file JSON, tabs are stored in this structure:
+
+        windows: [                 # Array of all windows
+            "tabs": [              # Each window has an array of tabs 
+                {
+                    "entries": [   # And each tab stores its history in an array of entries
+                        {
+                            "url": "https://www.google.com/",
+                            "title": "Google",
+                            ...
+                        },
+                        ...
+                    ],
+                },
+                ...
+            ],
+            ...
+        ]
+
+        We can use jq to sum the lengths of all the tabs arrays: 
+        [.windows[].tabs | length] | add
+        """
         recovery_file = Firefox.get_firefox_recovery_file()
         try:
             unpacked_json: Dict[str, Any] = Firefox.lz4json_decompress_file(
                 recovery_file
             )
             tab_count = (
-                jq.compile(".windows[].tabs | length").input(unpacked_json).first()
+                jq.compile("[.windows[].tabs | length] | add").input(unpacked_json).first()
             )
             return tab_count
         except Exception as e:
