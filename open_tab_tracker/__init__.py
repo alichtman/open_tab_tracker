@@ -1,10 +1,16 @@
 import click
+import logging.handlers
+from logging.handlers import SysLogHandler
+from loguru import logger
 from open_tab_tracker.__about__ import __version__
 from .database import Database
 from .graphing import draw_graph
 from .install import install_crontab_entry, uninstall_crontab_entry
 from .Platform import Platform
 
+def configure_logging_to_syslog():
+    handler = logging.handlers.SysLogHandler(facility=SysLogHandler.LOG_DAEMON, address="/dev/log")
+    logger.add(handler)
 
 
 @click.command(
@@ -30,6 +36,7 @@ from .Platform import Platform
 @click.option("--version", "-v", is_flag=True, help="Print the version")
 def run(add_datapoint, print_db, graph, install, drop_database, uninstall, version):
     """Open Tab Tracker"""
+    configure_logging_to_syslog()
     platform = Platform()
     platform.validate()
     if version:
