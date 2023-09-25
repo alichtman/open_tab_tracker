@@ -51,4 +51,4 @@ Options:
 ## Technical Details
 
 -   Data is stored in a `sqlite3` database at `$XDG_DATA_HOME/open_tab_tracker.db`.
--   Firefox tab counts are derived from your firefox profile session backup recovery files. You can read the implementation details in [`browsers/firefox.py`](https://github.com/alichtman/open_tab_tracker/blob/main/open_tab_tracker/browsers/firefox.py).
+-   Firefox tab counts are derived from your firefox profile session backup recovery files. You can read the implementation details in [`browsers/Firefox.py`](https://github.com/alichtman/open_tab_tracker/blob/main/open_tab_tracker/browsers/Firefox.py).
