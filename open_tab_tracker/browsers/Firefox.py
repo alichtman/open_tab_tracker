@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Any, Dict
 from loguru import logger
+import os
 from open_tab_tracker.Platform import Platform, OS
 from .Browser import Browser
 import lz4.block
@@ -42,25 +43,43 @@ class Firefox(Browser):
 
     @classmethod
     def get_firefox_recovery_file(self):
-        """Returns the first recovery file found for Firefox, or None. Currently only works on macOS."""
+        """Returns the latest recovery file found for Firefox, or None."""
+        firefox_profile_paths = []
         match Platform().get_current_os():
             case OS.MAC:
-                firefox_profiles = (
+                firefox_profile_paths.append(
                     Path.home() / "Library/Application Support/Firefox/Profiles/"
                 )
             case OS.LINUX:
-                firefox_profiles = Path.home() / "snap/firefox/common/.mozilla/firefox/"
+                firefox_profile_paths.extend([
+                    Path.home() / "snap/firefox/common/.mozilla/firefox/",
+                    Path.home() / ".mozilla/firefox/"
+                ])
+            case OS.WINDOWS:
+                firefox_profile_paths.extend([
+                    Path(os.environ["APPDATA"]) / "Mozilla/Firefox/Profiles/",
+                    Path(os.environ["LOCALAPPDATA"]) / "Packages/Mozilla.Firefox/LocalCache/Roaming/Mozilla/Firefox/Profiles/"
+                ])
 
-        firefox_profiles = list(firefox_profiles.glob("*.default*"))
+        firefox_profiles = [
+            profile
+            for path in firefox_profile_paths
+            for profile in path.glob("*.default*")
+        ]
         if len(firefox_profiles) == 0:
-            raise Exception(f"No Firefox profiles found in {firefox_profiles}")
+            raise Exception(f"No Firefox profiles found in {firefox_profile_paths}")
 
+        latest_recovery = None
+        latest_time = 0
         for profile in firefox_profiles:
             logger.info(f"Checking for recovery file in {profile}")
             recovery_file = Path(profile) / "sessionstore-backups/recovery.jsonlz4"
             if recovery_file.exists():
-                return recovery_file
-        return None
+                mod_time = recovery_file.stat().st_mtime
+                if mod_time > latest_time:
+                    latest_time = mod_time
+                    latest_recovery = recovery_file
+        return latest_recovery
 
     @classmethod
     def get_tab_count(self):
