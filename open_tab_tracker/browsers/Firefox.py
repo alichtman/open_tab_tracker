@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 from loguru import logger
 import os
 from open_tab_tracker.Platform import Platform, OS
@@ -44,7 +44,7 @@ class Firefox(Browser):
     @classmethod
     def get_firefox_recovery_file(self):
         """Returns the latest recovery file found for Firefox, or None."""
-        firefox_profile_paths = []
+        firefox_profile_paths: list[Path] = []
         match Platform().get_current_os():
             case OS.MAC:
                 firefox_profile_paths.append(
@@ -63,13 +63,13 @@ class Firefox(Browser):
 
         firefox_profiles = [
             profile
-            for path in firefox_profile_paths
-            for profile in path.glob("*.default*")
+            for profile_path_candidate in firefox_profile_paths
+            for profile in profile_path_candidate.glob("*.default*")
         ]
         if len(firefox_profiles) == 0:
             raise Exception(f"No Firefox profiles found in {firefox_profile_paths}")
 
-        latest_recovery = None
+        latest_recovery: Optional[Path] = None
         latest_time = 0
         for profile in firefox_profiles:
             logger.info(f"Checking for recovery file in {profile}")
